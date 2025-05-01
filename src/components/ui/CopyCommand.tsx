@@ -1,44 +1,38 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Check, Copy } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { useToast } from "@/components/ui/use-toast";
 
 interface CopyCommandProps {
   code: string;
-  className?: string;
 }
 
-const CopyCommand: React.FC<CopyCommandProps> = ({ code, className }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    if (!navigator.clipboard) {
-      console.error('Clipboard API not available');
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
+const CopyCommand: React.FC<CopyCommandProps> = ({ code }) => {
+  const [isCopied, setIsCopied] = useState(false);
+  const { toast } = useToast();
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setIsCopied(true);
+    
+    toast({
+      title: "Copied to clipboard",
+      description: "Code has been copied to your clipboard",
+    });
+    
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
   };
-
+  
   return (
-    <div className={cn('relative', className)}>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="absolute right-2 top-2 h-8 w-8" 
-        onClick={handleCopy}
-        aria-label="Copy to clipboard"
-      >
-        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-      </Button>
-    </div>
+    <Button 
+      variant="ghost" 
+      size="sm"
+      onClick={handleCopy}
+    >
+      {isCopied ? "Copied!" : "Copy Code"}
+    </Button>
   );
 };
 

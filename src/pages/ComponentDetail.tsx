@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { findComponentById } from '@/lib/componentData';
@@ -52,6 +51,7 @@ export default function ${component.name}Example() {
     console.log('Update component:', { id: component.id, ...data });
   };
 
+  // Create tabs configuration
   const tabs = [
     {
       label: "Preview",
@@ -216,6 +216,27 @@ export default function ${component.name}Example() {
             <li>Screen reader announcements for state changes</li>
             <li>Focus management for interactive elements</li>
           </ul>
+          <h4 className="text-md font-medium mt-6 mb-2">Keyboard Interactions</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 px-4">Key</th>
+                  <th className="text-left py-3 px-4">Function</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="py-2 px-4 font-medium">Tab</td>
+                  <td className="py-2 px-4">Moves focus to the component</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-2 px-4 font-medium">Enter/Space</td>
+                  <td className="py-2 px-4">Activates the component</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       ),
     },
@@ -233,15 +254,30 @@ export default function ${component.name}Example() {
             <li>Form submissions and confirmations</li>
             <li>Navigation between major sections of the application</li>
           </ul>
+          <div className="bg-muted p-4 rounded-md mb-6">
+            <h4 className="text-md font-medium mb-2">Best Practices</h4>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Use primary variant for main actions, secondary for alternative options</li>
+              <li>Keep button text concise and action-oriented</li>
+              <li>Include an icon only when it adds meaningful context</li>
+              <li>Ensure adequate spacing between multiple buttons</li>
+            </ul>
+          </div>
+          <div className="bg-destructive/10 p-4 rounded-md">
+            <h4 className="text-md font-medium mb-2 text-destructive">Avoid</h4>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Using too many primary buttons in a single view</li>
+              <li>Placing buttons too close to other interactive elements</li>
+              <li>Using vague or generic button text like "Click Here"</li>
+            </ul>
+          </div>
         </div>
       ),
-    },
+    }
   ];
 
   return (
     <div className="p-6 max-w-5xl">
-      <Breadcrumbs items={breadcrumbItems} className="mb-4" />
-      
       {isAdminMode && isEditing && (
         <ComponentEditor
           componentId={component.id}
@@ -250,7 +286,9 @@ export default function ${component.name}Example() {
           onUpdate={handleComponentUpdate}
         />
       )}
-
+      
+      <Breadcrumbs items={breadcrumbItems} className="mb-4" />
+      
       <div className="flex justify-between items-start mb-6">
         <div>
           <div className="flex items-center gap-3 mb-2">

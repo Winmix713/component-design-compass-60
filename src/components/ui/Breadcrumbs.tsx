@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
-export interface BreadcrumbItem {
+interface BreadcrumbItem {
   title: string;
   href: string;
   current?: boolean;
@@ -12,44 +11,35 @@ export interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  className?: string;
-  separator?: React.ReactNode;
 }
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
-  items,
-  className,
-  separator = <ChevronRight className="h-4 w-4 text-muted-foreground" />,
-}) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
+  const navigate = useNavigate();
+  
   return (
-    <nav className={cn('flex', className)} aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
-
-          return (
-            <li key={item.href} className="inline-flex items-center">
-              {isLast ? (
-                <span 
-                  className="text-sm font-medium text-foreground" 
-                  aria-current={item.current ? 'page' : undefined}
+    <nav className="flex mb-6">
+      <ol className="flex flex-wrap items-center space-x-2">
+        {items.map((item, index) => (
+          <React.Fragment key={item.href}>
+            <li>
+              {item.current ? (
+                <span className="text-foreground font-medium">{item.title}</span>
+              ) : (
+                <button 
+                  onClick={() => navigate(item.href)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {item.title}
-                </span>
-              ) : (
-                <>
-                  <Link
-                    to={item.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground"
-                  >
-                    {item.title}
-                  </Link>
-                  <span className="mx-1">{separator}</span>
-                </>
+                </button>
               )}
             </li>
-          );
-        })}
+            {index < items.length - 1 && (
+              <li className="text-muted-foreground">
+                <ChevronRight size={16} />
+              </li>
+            )}
+          </React.Fragment>
+        ))}
       </ol>
     </nav>
   );

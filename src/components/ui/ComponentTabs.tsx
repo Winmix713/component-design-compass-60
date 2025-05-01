@@ -1,40 +1,29 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from '@/lib/utils';
 
-export interface ComponentTab {
+interface TabItem {
   label: string;
   value: string;
   content: React.ReactNode;
 }
 
 interface ComponentTabsProps {
-  tabs: ComponentTab[];
-  defaultTab?: string;
-  className?: string;
+  tabs: TabItem[];
+  defaultValue?: string;
 }
 
-const ComponentTabs: React.FC<ComponentTabsProps> = ({
-  tabs,
-  defaultTab,
-  className,
-}) => {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.value);
-
+const ComponentTabs: React.FC<ComponentTabsProps> = ({ tabs, defaultValue = "preview" }) => {
   return (
-    <Tabs 
-      defaultValue={activeTab} 
-      className={cn("w-full", className)}
-      onValueChange={setActiveTab}
-    >
-      <TabsList className="mb-4">
+    <Tabs defaultValue={defaultValue} className="w-full">
+      <TabsList className="mb-6">
         {tabs.map((tab) => (
           <TabsTrigger key={tab.value} value={tab.value}>
             {tab.label}
           </TabsTrigger>
         ))}
       </TabsList>
+
       {tabs.map((tab) => (
         <TabsContent key={tab.value} value={tab.value}>
           {tab.content}

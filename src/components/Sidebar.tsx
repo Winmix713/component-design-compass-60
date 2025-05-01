@@ -4,17 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Search, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import { componentCategories } from '@/lib/componentData';
 import { useAdmin } from '@/context/AdminContext';
+import SidebarSection from './SidebarSection';
 
-type SidebarSection = {
-  title: string;
-  path: string;
-  icon?: React.ReactNode;
-};
-
-const sections: SidebarSection[] = [
+const sections = [
   { title: 'Getting Started', path: '/' },
   { title: 'Design Tokens', path: '/tokens' },
   { title: 'Pattern Library', path: '/patterns' },
@@ -34,31 +29,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    componentCategories.map(cat => cat.name)
-  );
   const [expandedDocs, setExpandedDocs] = useState(true);
   const { isAdminMode, setAdminMode } = useAdmin();
-
-  const toggleCategory = (category: string) => {
-    if (expandedCategories.includes(category)) {
-      setExpandedCategories(expandedCategories.filter(cat => cat !== category));
-    } else {
-      setExpandedCategories([...expandedCategories, category]);
-    }
-  };
-
-  const toggleDocs = () => {
-    setExpandedDocs(!expandedDocs);
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  const isComponentActive = (componentId: string) => {
-    return location.pathname === `/components/${componentId}`;
-  };
 
   const isDocActive = (docId: string) => {
     return location.pathname === `/docs/${docId}`;
@@ -100,95 +72,61 @@ const Sidebar = () => {
         <nav className="px-2 py-1 space-y-1">
           {/* Main Navigation Sections */}
           {sections.map((section) => (
-            <Button
-              key={section.title}
-              variant={isActive(section.path) ? "secondary" : "ghost"}
-              className={`w-full justify-start text-sm h-9 px-3 ${
-                isActive(section.path) ? "font-medium" : "font-normal"
-              }`}
-              onClick={() => navigate(section.path)}
-            >
-              {section.title}
-            </Button>
+            <SidebarSection 
+              key={section.title} 
+              title={section.title} 
+              path={section.path}
+            />
           ))}
           
           {/* Documentation Section */}
-          <div className="mt-6 space-y-1">
-            <Button
-              variant="ghost"
-              className="w-full justify-between text-sm h-9 px-3 font-medium"
-              onClick={toggleDocs}
-            >
-              <div className="flex items-center">
-                <BookOpen className="h-4 w-4 mr-2" />
-                <span>Documentation</span>
-              </div>
-              {expandedDocs ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </Button>
-            
-            {expandedDocs && filteredDocs.length > 0 && (
-              <div className="ml-4 space-y-1 mt-1">
-                {filteredDocs.map((doc) => (
-                  <Button
-                    key={doc.id}
-                    variant={isDocActive(doc.id) ? "secondary" : "ghost"}
-                    className={`w-full justify-start text-sm h-8 px-3 ${
-                      isDocActive(doc.id) ? "font-medium" : "font-normal"
-                    } flex items-center`}
-                    onClick={() => navigate(`/docs/${doc.id}`)}
-                  >
-                    <span>{doc.name}</span>
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
+          <SidebarSection
+            title="Documentation"
+            icon={<BookOpen className="h-4 w-4" />}
+            collapsible
+            defaultExpanded={expandedDocs}
+          >
+            {filteredDocs.length > 0 && filteredDocs.map((doc) => (
+              <Button
+                key={doc.id}
+                variant={isDocActive(doc.id) ? "secondary" : "ghost"}
+                className={`w-full justify-start text-sm h-8 px-3 ${
+                  isDocActive(doc.id) ? "font-medium" : "font-normal"
+                } flex items-center`}
+                onClick={() => navigate(`/docs/${doc.id}`)}
+              >
+                <span>{doc.name}</span>
+              </Button>
+            ))}
+          </SidebarSection>
           
           {/* Component Categories */}
-          <div className="mt-6 space-y-1">
-            {filteredCategories.map((category) => (
-              <div key={category.name}>
+          {filteredCategories.map((category) => (
+            <SidebarSection 
+              key={category.name}
+              title={category.name}
+              collapsible
+              defaultExpanded={true}
+            >
+              {category.components.map((component) => (
                 <Button
-                  variant="ghost"
-                  className="w-full justify-between text-sm h-9 px-3 font-medium"
-                  onClick={() => toggleCategory(category.name)}
+                  key={component.id}
+                  variant={location.pathname === `/components/${component.id}` ? "secondary" : "ghost"}
+                  className={`w-full justify-start text-sm h-8 px-3 ${
+                    location.pathname === `/components/${component.id}` ? "font-medium" : "font-normal"
+                  } flex items-center`}
+                  onClick={() => navigate(`/components/${component.id}`)}
                 >
-                  {category.name}
-                  {expandedCategories.includes(category.name) ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
+                  <span>{component.name}</span>
+                  {component.badge && (
+                    <span className="ml-auto bg-primary-600 text-white text-xs rounded-full px-2 py-0.5">
+                      {component.badge}
+                    </span>
                   )}
                 </Button>
-                
-                {expandedCategories.includes(category.name) && (
-                  <div className="ml-4 space-y-1 mt-1">
-                    {category.components.map((component) => (
-                      <Button
-                        key={component.id}
-                        variant={isComponentActive(component.id) ? "secondary" : "ghost"}
-                        className={`w-full justify-start text-sm h-8 px-3 ${
-                          isComponentActive(component.id) ? "font-medium" : "font-normal"
-                        } flex items-center`}
-                        onClick={() => navigate(`/components/${component.id}`)}
-                      >
-                        <span>{component.name}</span>
-                        {component.badge && (
-                          <span className="ml-auto bg-primary-600 text-white text-xs rounded-full px-2 py-0.5">
-                            {component.badge}
-                          </span>
-                        )}
-                      </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </SidebarSection>
+          ))}
         </nav>
       </div>
       
