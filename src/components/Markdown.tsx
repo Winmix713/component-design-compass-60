@@ -3,11 +3,21 @@ import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import ThemeContext from '@/context/ThemeContext'; // Import the ThemeContext
+import ThemeContext from '@/context/ThemeContext'; 
+import CopyCommand from './ui/CopyCommand';
 
 interface MarkdownProps {
   content: string;
   className?: string;
+}
+
+// Define a type for the code component props that includes the 'inline' property
+interface CodeProps {
+  node?: any;
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
 }
 
 const Markdown: React.FC<MarkdownProps> = ({ content, className }) => {
@@ -26,18 +36,24 @@ const Markdown: React.FC<MarkdownProps> = ({ content, className }) => {
     <div className={`markdown-content ${className || ''}`}>
       <ReactMarkdown
         components={{
-          code({ node, inline, className, children, ...props }) {
+          code({ node, inline, className, children, ...props }: CodeProps) {
             const match = /language-(\w+)/.exec(className || '');
             
             return !inline && match ? (
-              <SyntaxHighlighter
-                style={codeStyle}
-                language={match[1]}
-                PreTag="div"
-                {...props}
-              >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
+              <div className="relative">
+                <SyntaxHighlighter
+                  style={codeStyle}
+                  language={match[1]}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+                <CopyCommand 
+                  code={String(children)} 
+                  className="absolute top-2 right-2" 
+                />
+              </div>
             ) : (
               <code className={className} {...props}>
                 {children}
