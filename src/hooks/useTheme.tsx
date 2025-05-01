@@ -1,53 +1,22 @@
 
-import { createContext, useState, useContext, useEffect } from 'react';
+import { useContext } from 'react';
+import ThemeContext, { ThemeMode } from '@/context/ThemeContext';
 
-type Theme = 'dark' | 'light' | 'system';
-
-interface ThemeProviderProps {
-  children: React.ReactNode;
+interface ThemeContextValue {
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  toggleTheme: () => void;
 }
 
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem('ui-theme') as Theme) || 'system'
-  );
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    
-    root.classList.remove('light', 'dark');
-    
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light';
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.add(theme);
-    }
-    
-    localStorage.setItem('ui-theme', theme);
-  }, [theme]);
-
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
-
-export const useTheme = () => {
+// This is a simple wrapper around the ThemeContext to provide a more convenient API
+export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
+  
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
+  
   return context;
 };
+
+export default useTheme;
