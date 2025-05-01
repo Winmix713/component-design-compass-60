@@ -5,9 +5,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface CopyCommandProps {
   code: string;
+  className?: string;
 }
 
-const CopyCommand: React.FC<CopyCommandProps> = ({ code }) => {
+const CopyCommand: React.FC<CopyCommandProps> = ({ code, className }) => {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   
@@ -30,6 +31,7 @@ const CopyCommand: React.FC<CopyCommandProps> = ({ code }) => {
       variant="ghost" 
       size="sm"
       onClick={handleCopy}
+      className={className}
     >
       {isCopied ? "Copied!" : "Copy Code"}
     </Button>

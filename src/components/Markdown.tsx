@@ -1,8 +1,9 @@
+
 import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import ThemeContext, { ThemeMode } from '@/context/ThemeContext'; // Importáljuk a saját ThemeContext-et és a ThemeMode típust
+import ThemeContext from '@/context/ThemeContext'; // Import the ThemeContext
 
 interface MarkdownProps {
   content: string;
@@ -10,11 +11,11 @@ interface MarkdownProps {
 }
 
 const Markdown: React.FC<MarkdownProps> = ({ content, className }) => {
-  // A saját ThemeContext használata
+  // Use the ThemeContext
   const { theme } = useContext(ThemeContext);
   
-  // A téma alapján választjuk ki a kód kiemelés stílusát
-  // Ha a téma 'system', akkor ellenőrizzük a rendszer beállításait
+  // Choose code highlighting style based on theme
+  // If theme is 'system', check system preferences
   let effectiveTheme: 'light' | 'dark' = theme === 'system'
     ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     : theme as 'light' | 'dark';

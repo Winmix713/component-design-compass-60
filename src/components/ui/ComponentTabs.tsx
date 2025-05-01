@@ -11,11 +11,19 @@ interface TabItem {
 interface ComponentTabsProps {
   tabs: TabItem[];
   defaultValue?: string;
+  defaultTab?: string; // Added for backward compatibility
 }
 
-const ComponentTabs: React.FC<ComponentTabsProps> = ({ tabs, defaultValue = "preview" }) => {
+const ComponentTabs: React.FC<ComponentTabsProps> = ({ 
+  tabs, 
+  defaultValue = "preview",
+  defaultTab
+}) => {
+  // Use defaultTab if provided (for backward compatibility)
+  const initialTab = defaultTab || defaultValue;
+  
   return (
-    <Tabs defaultValue={defaultValue} className="w-full">
+    <Tabs defaultValue={initialTab} className="w-full">
       <TabsList className="mb-6">
         {tabs.map((tab) => (
           <TabsTrigger key={tab.value} value={tab.value}>

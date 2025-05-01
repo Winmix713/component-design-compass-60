@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { useAdmin } from '@/context/AdminContext';
@@ -6,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from './ui/breadcrumb';
 import { useNavigate } from 'react-router-dom';
 import { Code } from 'lucide-react';
-import { Markdown } from './Markdown';
+import Markdown from './Markdown';
 
 interface DocLayoutProps {
   title: string;
